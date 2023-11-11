@@ -2,30 +2,38 @@ package fetch
 import(
     "sni-fetch/challenge"
 	"fmt"
-	_ "log"
 	"strings"
 	"sync"
 )
 
+var mu sync.Mutex
 var vaildSNIs []string
-var sniNum = 0
+var sniNum = 1
 
 func HandleRecords(rs []Record) {
 	// completedCh := make(chan struct{}, requiredSNINum)
 	var wg sync.WaitGroup
 
-	con := 5
 	index := 0
-	for i:= 0; i < len(domainList) / con; i++ {
-		for j := 0; j < con; j++ {
+	for i:= 0; i < len(domainList) / fetch.Con; i++ {
+		// Create goruntimes with the number of fetch.Con
+		for j := 0; j < fetch.Con; j++ {
 			wg.Add(1)
 			go processChallenge(domainList[index], &wg)
 			index++
 		}
 		wg.Wait()
-		if(sniNum >= requiredSNINum) {
-			output()
-			return
+		if(fetch.Num == 0) {
+			// Require to fetch check all the rcds
+			if(sniNum == len(domainList)) {
+				output()
+				return
+			}
+		} else {
+			if(len(vaildSNIs) >= fetch.Num) {
+				output()
+				return
+			}
 		}
 	}
 
@@ -34,12 +42,14 @@ func HandleRecords(rs []Record) {
 
 func processChallenge(domain string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	if(challenge.Check(domain)) {
+	if(challenge.Check(domain, &sniNum)) {
 		vaildSNIs = append(vaildSNIs, domain)
-		sniNum++
 	}
+	mu.Lock()
+	sniNum++
+	mu.Unlock()
 }
 
 func output() {
-	fmt.Printf("[Finished] Found %v SNIs available: \n %v", len(vaildSNIs), strings.Join(vaildSNIs, "\n"))
+	fmt.Printf("\n\033[32m[Finished] Found %v SNIs available: \n %v\033[0m]", len(vaildSNIs), strings.Join(vaildSNIs, "\n"))
 }

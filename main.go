@@ -2,22 +2,33 @@ package main
 
 import (
 	"flag"
-	"regexp"
-	"log"
-	//"fmt"
+	"fmt"
 	"sni-fetch/fetch"
 )
 
 func main() {
-	ipPattern := `\b(?:\d{1,3}\.){3}\d{1,3}\b`
-	ipRegex := regexp.MustCompile(ipPattern)
+	
 	targetIP := flag.String("t", "", "The target IP")
 	sniNum := flag.Int("n", 1, "The required number of sni")
+	conNum := flag.Int("c", 5, "")
 	flag.Parse()
-	isVaildIP := ipRegex.MatchString(*targetIP)
-	if !isVaildIP {
-		log.Fatal("Please give a correct IP address!")
-	}
-	
-	fetch.Start(*targetIP, *sniNum)
+	printProcInfo()
+	fetch.Start(fetch.Fetch{
+		Addr : *targetIP,
+		Num : *sniNum,
+		Con : *conNum})
+}
+
+
+func printProcInfo() {
+	title := `
+ ███████╗███╗   ██╗██╗ ███████╗███████╗████████╗ ██████╗██╗  ██╗
+ ██╔════╝████╗  ██║██║ ██╔════╝██╔════╝╚══██╔══╝██╔════╝██║  ██║
+ ███████╗██╔██╗ ██║██║ █████╗  █████╗     ██║   ██║     ███████║
+ ╚════██║██║╚██╗██║██║ ██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║
+ ███████║██║ ╚████║██║ ██║     ███████╗   ██║   ╚██████╗██║  ██║
+ ╚══════╝╚═╝  ╚═══╝╚═╝ ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝                
+	`
+	// 8 lines
+	fmt.Printf(title + "\n")
 }
