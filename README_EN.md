@@ -18,7 +18,15 @@ Execute the script (As an example for Windwos)
 ```
 
 Optional parameters:
--n The number of SNIs requests needed
+```
+-n The number of SNIs requests needed. Default: 1
+If set to 0, will check every domains that can be checked
+-c The number of concurrent checks in a single round. Default: 5
+
+Recommended command:
+./sni-fetch-windows.exe -t 192.168.1.0 -n 0 -c 50
+```
+
 
 # More
 

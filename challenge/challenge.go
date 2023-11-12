@@ -2,8 +2,6 @@ package challenge
 
 import (
 	"crypto/tls"
-	_ "golang.org/x/term"
-	_ "github.com/gookit/color"
 	"net"
 	"net/http"
 	"fmt"
@@ -11,13 +9,15 @@ import (
 	"sync"
 )
 var mu sync.Mutex
+var failedInfo string
+
 func Check(host string, sniNum *int) bool {
 	result := checkTLSv3(host) && checkHTTP2(host)
 	mu.Lock()
 	if(result) {
-		fmt.Printf("[%d] %v \033[32mavailable\n\033[0m", *sniNum, host)
+		fmt.Printf("[%d] %v \033[32mAvailable\n\033[0m", *sniNum, host)
 	} else {
-		fmt.Printf("[%d] %v \033[31mfailed\n\033[0m", *sniNum, host)
+		fmt.Printf("[%d] %s \033[31m%s\n\033[0m", *sniNum, host, failedInfo)
 	}
 	mu.Unlock()
 	return result 
@@ -40,7 +40,7 @@ func checkTLSv3(host string)  bool {
 	// Check the negotiated TLS version
 	tlsVer := conn.ConnectionState().Version
 	if (tlsVer != tls.VersionTLS13) {
-		return fail("not supports TLSv1.3")
+		return fail("Not supports TLSv1.3")
 	}
 	return true
 }
@@ -58,12 +58,13 @@ func checkHTTP2(host string) bool {
 	defer resp.Body.Close()
 
 	if !(resp.ProtoMajor == 2) {
-		return fail("not supports HTTP/2")
+		return fail("Not supports HTTP/2")
 	}
 	return true
 }
 
 func fail(info string) bool {
 	// color.Red.Printf(info + "\n")
+	failedInfo = info
 	return false
 }

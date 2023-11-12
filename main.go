@@ -10,7 +10,7 @@ func main() {
 	
 	targetIP := flag.String("t", "", "The target IP")
 	sniNum := flag.Int("n", 1, "The required number of sni")
-	conNum := flag.Int("c", 5, "")
+	conNum := flag.Int("c", 5, "The con")
 	flag.Parse()
 	printProcInfo()
 	fetch.Start(fetch.Fetch{
@@ -29,6 +29,5 @@ func printProcInfo() {
  ███████║██║ ╚████║██║ ██║     ███████╗   ██║   ╚██████╗██║  ██║
  ╚══════╝╚═╝  ╚═══╝╚═╝ ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝                
 	`
-	// 8 lines
 	fmt.Printf(title + "\n")
 }

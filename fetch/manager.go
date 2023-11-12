@@ -13,6 +13,9 @@ var sniNum = 1
 func HandleRecords(rs []Record) {
 	// completedCh := make(chan struct{}, requiredSNINum)
 	var wg sync.WaitGroup
+	if fetch.Con > len(domainList) {
+		fetch.Con = len(domainList)
+	}
 
 	index := 0
 	for i:= 0; i < len(domainList) / fetch.Con; i++ {
