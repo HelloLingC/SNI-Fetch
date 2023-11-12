@@ -22,6 +22,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          goversion: 21.3
-          binary_name: "snifetch"
+          binary_name: "sni-fetch"
           extra_files: LICENSE README.md README_EN.md
