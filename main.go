@@ -10,7 +10,7 @@ func main() {
 	
 	targetIP := flag.String("t", "", "The target IP")
 	sniNum := flag.Int("n", 1, "The required number of sni")
-	conNum := flag.Int("c", 5, "The con")
+	conNum := flag.Int("c", 10, "The number of concurrent checks in a single round")
 	flag.Parse()
 	printProcInfo()
 	fetch.Start(fetch.Fetch{
