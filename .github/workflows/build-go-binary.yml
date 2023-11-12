@@ -1,8 +1,9 @@
-name: build-go-binary
+name: Build Binary
 
 on:
   release:
-    types: [created]
+    types: [published]
+    branches: [main]
 
 jobs:
   build-go-binary:
