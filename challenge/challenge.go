@@ -17,7 +17,7 @@ func Check(host string, sniNum *int) bool {
 	if(result) {
 		fmt.Printf("[%d]\033[32m %v  Available\n\033[0m", *sniNum, host)
 	} else {
-		fmt.Printf("[%d] %s %s\n ", *sniNum, host, infoStr)
+		fmt.Printf("[%d] %s %s\n", *sniNum, host, infoStr)
 	}
 	mu.Unlock()
 	return result 
