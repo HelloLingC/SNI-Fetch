@@ -2,10 +2,8 @@ package challenge
 
 import (
 	"crypto/tls"
-	_ "net"
 	"net/http"
 	"fmt"
-	_ "time"
 	"sync"
 )
 var mu sync.Mutex

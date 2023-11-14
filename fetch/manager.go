@@ -1,14 +1,17 @@
 package fetch
-import(
-    "sni-fetch/challenge"
+
+import (
 	"fmt"
+	"sni-fetch/challenge"
 	"strings"
 	"sync"
 )
 
 var mu sync.Mutex
+
 // The number of sni met the conditions
 var vaildSNIs []string
+
 // The number of already checked sni
 var sniNum = 1
 
@@ -18,14 +21,14 @@ func HandleRecords(rs []Record) {
 		fetch.Con = len(domainList)
 	}
 	dIndex := 0
-	for i:= 0; i < fetch.Con; i++ {
+	for i := 0; i < fetch.Con; i++ {
 		go processChallenge(domainList[dIndex], ch)
 		dIndex++
 	}
 
 	for {
 		// When a check task finished
-		<- ch
+		<-ch
 		// All the SNI checks finished
 		if sniNum == len(domainList) {
 			break
@@ -47,7 +50,7 @@ func HandleRecords(rs []Record) {
 }
 
 func processChallenge(domain string, ch chan struct{}) {
-	if(challenge.Check(domain, &sniNum)) {
+	if challenge.Check(domain, &sniNum) {
 		vaildSNIs = append(vaildSNIs, domain)
 	}
 	mu.Lock()

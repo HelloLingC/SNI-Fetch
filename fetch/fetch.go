@@ -1,22 +1,23 @@
 package fetch
 
-import(
-	"github.com/gocolly/colly/v2"
-	"log"
+import (
 	"fmt"
+	"log"
 	"net"
 	"strings"
+
+	"github.com/gocolly/colly/v2"
 )
 
 type Fetch struct {
-	Addr string
-	Num int
-	Con int
+	Addr        string
+	Num         int
+	Con         int
 	DomainsFile string
 }
 
 type Record struct {
-	IP string
+	IP      string
 	Domains []string
 }
 
@@ -68,7 +69,7 @@ func getDNSList(url string) {
 			// Skip PTR records
 			if i == 0 {
 				IP = e.Text
-			} else if i == 2 {
+			} else if i == 2 && !IsStrEmpty(e.Text) {
 				domains = strings.Split(e.Text, ", ")
 				domainList = append(domainList, domains...)
 			}
@@ -86,5 +87,5 @@ func getDNSList(url string) {
 	if err != nil {
 		log.Fatal("Cannot get DNS list", err)
 	}
-	
+
 }
