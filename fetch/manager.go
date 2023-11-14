@@ -18,25 +18,31 @@ func HandleRecords(rs []Record) {
 		fetch.Con = len(domainList)
 	}
 	dIndex := 0
-	for i:=0; i < fetch.Con; i++ {
+	for i:= 0; i < fetch.Con; i++ {
 		go processChallenge(domainList[dIndex], ch)
 		dIndex++
 	}
 
 	for {
+		// When a check task finished
 		<- ch
-		if fetch.Num == 0 {
-			if sniNum == len(domainList) {
-				break
-			}
-		} else {
-			if fetch.Num == len(vaildSNIs) {
+		// All the SNI checks finished
+		if sniNum == len(domainList) {
+			break
+		}
+		if fetch.Num != 0 {
+			if len(vaildSNIs) >= fetch.Num {
 				break
 			}
 		}
-		go processChallenge(domainList[dIndex], ch)
-		dIndex++
+		// Continue to create more tasks,
+		// if not cover all the domains wanted to be checked
+		if dIndex < len(domainList) {
+			go processChallenge(domainList[dIndex], ch)
+			dIndex++
+		}
 	}
+	close(ch)
 	output()
 }
 
