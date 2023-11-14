@@ -10,7 +10,7 @@ func main() {
 	
 	targetIP := flag.String("t", "", "The target IP")
 	sniNum := flag.Int("n", 1, "The required number of sni")
-	conNum := flag.Int("c", 10, "The number of concurrent checks in a single round")
+	conNum := flag.Int("c", 50, "The number of concurrent checks in a single round")
 	file := flag.String("file", "", "")
 	flag.Parse()
 	printProcInfo()

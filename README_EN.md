@@ -1,6 +1,6 @@
 # Reality SNI Fetch Script
 
-Easily find available SNIs for Reality
+Quickly find multiple SNI within the same AS for Reality
 
 Domains selected by this script:
 - Is under the same AS with the target IP (Ensure IP simularity)
@@ -14,17 +14,16 @@ Go to Release page and download the execuable file.
 Execute the script (As an example for Windwos)
 
 ```bash
-./sni-fetch-windows.exe -t 192.168.1.0
+./sni-fetch.exe -t 142.251.46.206 -n 0
 ```
 
 Optional parameters:
+
 ```
 -n The number of SNIs requests needed. Default: 1
 If set to 0, will check every domains that can be checked
--c The number of concurrent checks in a single round. Default: 10
+-c The number of allowed concurrent checking tasks. Please adjust with your system resources. Default: 50
 
-Recommended command:
-./sni-fetch-windows.exe -t 192.168.1.0 -n 0 -c 50
 ```
 
 
