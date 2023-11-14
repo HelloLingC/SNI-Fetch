@@ -2,69 +2,86 @@ package challenge
 
 import (
 	"crypto/tls"
-	"net"
+	_ "net"
 	"net/http"
 	"fmt"
-	"time"
+	_ "time"
 	"sync"
 )
 var mu sync.Mutex
-var failedInfo string
 
 func Check(host string, sniNum *int) bool {
-	result := checkTLSv3(host) && checkHTTP2(host)
+	infoStr := ""
+	result := test(host, &infoStr)
 	mu.Lock()
 	if(result) {
-		fmt.Printf("[%d] %v \033[32mAvailable\n\033[0m", *sniNum, host)
+		fmt.Printf("[%d]\033[32m %v  Available\n\033[0m", *sniNum, host)
 	} else {
-		fmt.Printf("[%d] %s \033[31m%s\n\033[0m", *sniNum, host, failedInfo)
+		fmt.Printf("[%d] %s %s\n ", *sniNum, host, infoStr)
 	}
 	mu.Unlock()
 	return result 
 }
 
-func checkTLSv3(host string)  bool {
-	timeout := 5 * time.Second
-	addr := net.JoinHostPort(host, "443")
-	// Todo: handle www redirect
-	conn, err := tls.DialWithDialer(&net.Dialer{Timeout: timeout}, "tcp", addr, &tls.Config{
-		InsecureSkipVerify: true,
-		MinVersion:         tls.VersionTLS11,
-		MaxVersion:         tls.VersionTLS13,
-	})
+func test(host string, info *string) bool {
+	url := fmt.Sprintf("https://%v", host)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return fail("Failed when checking TLS")
+		fmt.Println("Error creating request:", err)
+		return false
 	}
-	defer conn.Close()
-
-	// Check the negotiated TLS version
-	tlsVer := conn.ConnectionState().Version
-	if (tlsVer != tls.VersionTLS13) {
-		return fail("Not supports TLSv1.3")
-	}
-	return true
-}
-
-func checkHTTP2(host string) bool {
-	url := "https://" + host
-	client := &http.Client{
+	// tp := &http.Transport{
+	// 	TLSClientConfig: &tls.Config{
+	// 	MinVersion:         tls.VersionTLS11,
+	// 	MaxVersion:         tls.VersionTLS13,
+	// 	},
+	// }
+	
+	c := &http.Client{
 		Transport: &http.Transport{},
 	}
-
-	resp, err := client.Get(url)
-	if err != nil {
-		return fail("Failed when checking h2")
+	res, _ := c.Do(req)
+	// When http status code is not 200 OK
+	if res == nil {
+		*info = fmtRedColor(" Unreachable")
+		return false
+	} else {
+		// *info = fmtGreenColor(" Accessible")
 	}
-	defer resp.Body.Close()
-
-	if !(resp.ProtoMajor == 2) {
-		return fail("Not supports HTTP/2")
+	defer res.Body.Close()
+	if res.TLS == nil {
+		*info += fmtRedColor(" TLS CONN ")
+		return fail("Failed to create a TLS conn")
 	}
-	return true
+	if len(res.TLS.VerifiedChains) == 0 {
+		*info += " Unknown TLS cert"
+	}
+
+	checkTLS := res.TLS.Version == tls.VersionTLS13
+	checkH2 :=  res.ProtoMajor == 2 
+
+	if checkTLS {
+		*info += fmtGreenColor("  TLSv1.3  ")
+	} else {
+		*info += fmtRedColor("  TLSv1.3  ")
+	}
+
+	if checkH2 {
+		*info += fmtGreenColor(" HTTP/2  ")
+	} else {
+		*info += fmtRedColor(" HTTP/2  ")
+	}
+	return checkTLS && checkH2
 }
 
-func fail(info string) bool {
-	// color.Red.Printf(info + "\n")
-	failedInfo = info
+func fmtRedColor(s string) string {
+	return fmt.Sprintf("\033[31m%v\033[0m", s)
+}
+
+func fmtGreenColor(s string) string {
+	return fmt.Sprintf("\033[32m%v\033[0m", s)
+}
+
+func fail(i string) bool {
 	return false
 }

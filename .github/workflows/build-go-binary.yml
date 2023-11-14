@@ -1,4 +1,4 @@
-name: Build Binary
+name: Build When Release
 
 on:
   release:
@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [linux, windows, darwin]
+        goos: [linux, windows, freebsd, darwin]
         goarch: [amd64, arm64]
         exclude:
-          - goarch: arm64 # Windows doen't run on arm64
+          - goarch: arm64 # Windows don't run on arm64
             goos: windows
     steps:
       - uses: actions/checkout@v3

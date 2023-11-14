@@ -54,5 +54,5 @@ func processChallenge(domain string, wg *sync.WaitGroup) {
 }
 
 func output() {
-	fmt.Printf("\n\033[32m[Finished] Found %v SNIs available: \n %v\033[0m]", len(vaildSNIs), strings.Join(vaildSNIs, "\n"))
+	fmt.Printf("\n\033[32m[Finished] Found %v SNIs available: \n %v\033[0m", len(vaildSNIs), strings.Join(vaildSNIs, "\n"))
 }

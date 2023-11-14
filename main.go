@@ -11,12 +11,15 @@ func main() {
 	targetIP := flag.String("t", "", "The target IP")
 	sniNum := flag.Int("n", 1, "The required number of sni")
 	conNum := flag.Int("c", 10, "The number of concurrent checks in a single round")
+	file := flag.String("file", "", "")
 	flag.Parse()
 	printProcInfo()
 	fetch.Start(fetch.Fetch{
 		Addr : *targetIP,
 		Num : *sniNum,
-		Con : *conNum})
+		Con : *conNum,
+		DomainsFile: *file,
+	})
 }
 
 

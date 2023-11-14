@@ -12,6 +12,7 @@ type Fetch struct {
 	Addr string
 	Num int
 	Con int
+	DomainsFile string
 }
 
 type Record struct {
@@ -29,6 +30,10 @@ func errorHandle(r *colly.Response, err error) {
 func Start(f Fetch) {
 	fmt.Printf("Start fetching...\n")
 	fetch = &f
+	if fetch.DomainsFile != "" {
+
+	}
+
 	ip := net.ParseIP(fetch.Addr)
 	if ip == nil {
 		log.Fatal("Inputed a invaild IP address")
@@ -46,7 +51,7 @@ func Start(f Fetch) {
 
 	err := col.Visit(api + fetch.Addr)
 	if err != nil {
-		log.Fatal("Cannot get ASN info", err)
+		log.Fatal("Cannot get AS info", err)
 	}
 
 }
